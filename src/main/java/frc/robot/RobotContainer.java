@@ -36,7 +36,8 @@ public class RobotContainer {
       .toggleOnTrue(drivetrainX.tankDriveCommand(
         () -> controller.getLeftY(), 
         () -> controller.getRightY()
-      ).repeatedly());
+      ))
+      .toggleOnTrue(arm.stopArmCommand());
     
     //the arm is defaulted to manual control using the left joystick
     arm.setDefaultCommand(arm.armManualCommand(
