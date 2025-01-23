@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,31 +27,37 @@ public class RobotContainer {
   private void configureBindings() {
      //drivetrain defaults to arcade drive
      drivetrainX.setDefaultCommand(drivetrainX.arcadeDriveCommand(
-      () -> controller.getRightY(), 
-      () -> controller.getRightX()
+      () -> -controller.getLeftY(), 
+      () -> -controller.getRightX()
     ));
 
 
     //when the x button is pressed, the drivetrain toggles tank drive
     controller.x()
       .toggleOnTrue(drivetrainX.tankDriveCommand(
-        () -> controller.getLeftY(), 
-        () -> controller.getRightY()
+        () -> -controller.getLeftY(), 
+        () -> -controller.getRightY()
       ))
       .toggleOnTrue(arm.stopArmCommand());
     
-    //the arm is defaulted to manual control using the left joystick
-    arm.setDefaultCommand(arm.armManualCommand(
-      () -> controller.getLeftY()
-    ));
+    
+    controller.leftTrigger()
+      .whileTrue(arm.armManualCommand(
+        () -> controller.getLeftTriggerAxis()
+      ));
+
+    controller.rightTrigger()
+      .whileTrue(arm.armManualCommand(
+        () -> -controller.getLeftTriggerAxis()
+      ));
 
     //when the right trigger is held, the intake spins forward
-    controller.rightTrigger()
+    controller.rightBumper()
       .onTrue(intake.intakeCommand())
       .onFalse(intake.stopIntakeCommand());
 
     //when the left trigger is held, the intake spins backward
-    controller.leftTrigger()
+    controller.leftBumper()
       .onTrue(intake.outtakeCommand())
       .onFalse(intake.stopIntakeCommand());
     
